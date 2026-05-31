@@ -143,12 +143,15 @@
   const scoreEl = document.getElementById('score');
   const bestEl = document.getElementById('best');
 
+  // Grid: each cell is 20px, giving a 24×24 tile board
   const CELL = 20;
   const COLS = canvas.width / CELL;
   const ROWS = canvas.height / CELL;
-  const BASE_INTERVAL = 130;
-  const MIN_INTERVAL = 60;
+  const BASE_INTERVAL = 130; // ms between steps at score 0
+  const MIN_INTERVAL = 60;   // fastest the game can get
 
+  // snake: array of {x,y} grid coords, head first
+  // dir/nextDir: current and queued movement direction
   let snake, dir, nextDir, food, score, best, gameLoop, paused, running;
 
   best = parseInt(localStorage.getItem('snakeBest') || '0');
@@ -170,6 +173,7 @@
     spawnFood();
   }
 
+  // Pick a random cell that isn't occupied by the snake
   function spawnFood() {
     let pos;
     do {
@@ -178,16 +182,18 @@
     food = pos;
   }
 
+  // Called every tick: move snake, check collisions, handle eating
   function step() {
     if (paused) return;
 
     dir = nextDir;
     const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
+    // Wall and self-collision → game over
     if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return endGame();
     if (snake.some(s => s.x === head.x && s.y === head.y)) return endGame();
 
-    snake.unshift(head);
+    snake.unshift(head); // move head forward
 
     if (head.x === food.x && head.y === food.y) {
       score++;
@@ -198,9 +204,9 @@
         localStorage.setItem('snakeBest', best);
       }
       spawnFood();
-      resetLoop();
+      resetLoop(); // recalculate speed after each food eaten
     } else {
-      snake.pop();
+      snake.pop(); // didn't eat: remove tail to keep length constant
     }
 
     draw();
@@ -276,6 +282,7 @@
       const py = seg.y * CELL + 1;
       const size = CELL - 2;
 
+      // Gradient: t=0 is the head (bright green), t=1 is the tail (darker)
       const t = i / (snake.length - 1 || 1);
       const r = Math.round(74 + (20 - 74) * t);
       const g = Math.round(222 + (160 - 222) * t);
