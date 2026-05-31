@@ -22,7 +22,16 @@ Or double-click `snake.html` in Explorer.
 $env:PATH += ";C:\Program Files\Git\bin"
 ```
 
-After every meaningful change: commit with a clean message and push to `https://github.com/tamiraro/claudeTest` (branch `master`). Use `gh auth setup-git` if the push returns a 401.
+**Every meaningful change must be committed and pushed.** After editing any file, run:
+
+```powershell
+$env:PATH += ";C:\Program Files\Git\bin"
+git add <changed-files>
+git commit -m "<concise description of what changed and why>"
+git push
+```
+
+This keeps GitHub in sync so any version can be reverted to at any time. Use `gh auth setup-git` if the push returns a 401.
 
 ## Architecture
 
